@@ -2,26 +2,28 @@ import uuid
 
 import boto3
 import os
+import json
 
 # Get the service client.
 s3 = boto3.client('s3')
    
 def lambda_handler(event, context):
-
-   # Generate a random S3 key name
-   upload_key = uuid.uuid4().hex
+   
+   # Retrieve the filename
+   upload_key = event["queryStringParameters"]["filename"]
 
    # Generate the presigned URL for put requests
-   presigned_url = s3.generate_presigned_url(
-       ClientMethod='put_object',
-       ExpiresIn=60,
-       Params={
-           'Bucket': os.environ["bucketName"],
-           'Key': upload_key
-       }
+   presigned_url = s3.generate_presigned_post(
+       Bucket = os.environ["bucketName"],
+       Key = upload_key,
+       ExpiresIn = 60
    )
-
+   
+   print(presigned_url)
    # Return the presigned URL
    return {
-       "upload_url": presigned_url
+       "headers":{
+          "Access-Control-Allow-Origin":"'*'"
+       },
+       "body": json.dumps(presigned_url)
    }
