@@ -23,7 +23,7 @@ def lambda_handler(event, context):
    # Return the presigned URL
    return {
        "headers":{
-          "Access-Control-Allow-Origin":"'*'"
+          "Access-Control-Allow-Origin":"*"
        },
        "body": json.dumps(presigned_url)
    }
